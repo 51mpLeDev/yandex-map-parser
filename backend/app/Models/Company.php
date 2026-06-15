@@ -14,6 +14,8 @@ class Company extends Model
         'ratings_count',
         'reviews_count',
         'last_parsed_at',
+        'status',
+        'last_error'
     ];
 
     protected $casts = [
