@@ -16,7 +16,12 @@ class CompanyService
             ]
         );
 
-        // если уже парсится — не запускаем повторно
+        if ($company->wasRecentlyCreated) {
+            ParseCompanyJob::dispatch($company->id);
+
+            return $company;
+        }
+
         if ($company->status !== 'processing') {
             $company->update([
                 'status' => 'processing',
