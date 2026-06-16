@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use App\Services\CompanyService;
+use Illuminate\Http\JsonResponse;
 
 class CompanyController extends Controller
 {
@@ -27,6 +28,16 @@ class CompanyController extends Controller
     {
         return new CompanyResource($company);
     }
+
+    public function showCurrent(): JsonResponse
+    {
+        $company = Company::latest()->first();
+
+        return response()->json([
+            'data' => $company ? new CompanyResource($company) : null,
+        ]);
+    }
+
 
     public function refresh(Company $company): CompanyResource
     {
