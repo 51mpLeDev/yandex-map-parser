@@ -17,4 +17,4 @@ Route::prefix('company')->group(function () {
     Route::get('/', [CompanyController::class, 'showCurrent']);
     Route::get('/{company}', [CompanyController::class, 'show']);
     Route::post('/{company}/refresh', [CompanyController::class, 'refresh']);
-});
+})->middleware('auth:sanctum');
