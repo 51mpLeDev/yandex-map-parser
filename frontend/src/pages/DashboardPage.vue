@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { onUnmounted } from "vue";
 
 import CompanyCard from "../components/CompanyCard.vue";
 import ReviewsTable from "../components/ReviewsTable.vue";
@@ -12,20 +13,25 @@ const url = ref("");
 const companyStore = useCompanyStore();
 const reviewsStore = useReviewsStore();
 
+
+onUnmounted(() => {
+  companyStore.stopPolling();
+});
+
 async function submit() {
   await companyStore.create(url.value);
 }
 
 watch(
-    () => companyStore.company,
-    async (company) => {
-      if (!company) return;
-
-      await reviewsStore.load(company.id);
-    },
-    {
-      deep: true,
-    },
+    () => companyStore.company?.status,
+    async (status) => {
+      if (
+          status === "completed" &&
+          companyStore.company
+      ) {
+        await reviewsStore.load(companyStore.company.id);
+      }
+    }
 );
 </script>
 

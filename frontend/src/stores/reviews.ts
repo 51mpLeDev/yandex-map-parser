@@ -8,13 +8,24 @@ export const useReviewsStore = defineStore("reviews", () => {
     const reviews = ref<Review[]>([]);
     const page = ref(1);
     const total = ref(0);
+    const lastPage = ref(0);
+    const perPage = ref(0);
+    const loading = ref(false);
 
     async function load(companyId: number, currentPage = 1) {
-        const { data } = await api.getReviews(companyId, currentPage);
+        loading.value = true;
 
-        reviews.value = data.data;
-        total.value = data.total;
-        page.value = data.current_page;
+        try {
+            const { data } = await api.getReviews(companyId, currentPage);
+
+            reviews.value = data.data;
+            total.value = data.total;
+            page.value = data.current_page;
+            lastPage.value = data.last_page;
+            perPage.value = data.per_page;
+        } finally {
+            loading.value = false;
+        }
     }
 
     return {
@@ -22,5 +33,8 @@ export const useReviewsStore = defineStore("reviews", () => {
         page,
         total,
         load,
+        lastPage,
+        perPage,
+        loading,
     };
 });

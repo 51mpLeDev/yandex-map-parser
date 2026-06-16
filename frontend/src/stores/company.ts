@@ -29,8 +29,11 @@ export const useCompanyStore = defineStore("company", () => {
         if (!company.value) return;
 
         await api.refreshCompany(company.value.id);
-
         await load(company.value.id);
+
+        if (company.value?.status === "pending") {
+            startPolling();
+        }
     }
 
     let timer: number | null = null;
@@ -64,6 +67,7 @@ export const useCompanyStore = defineStore("company", () => {
         create,
         load,
         refresh,
-        startPolling
+        startPolling,
+        stopPolling
     };
 });
