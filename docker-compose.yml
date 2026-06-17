@@ -50,7 +50,9 @@ services:
     working_dir: /app
     volumes:
       - ./parser:/app
-    command: tail -f /dev/null
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run build && node dist/server.js"
 
 volumes:
   mysql_data:
