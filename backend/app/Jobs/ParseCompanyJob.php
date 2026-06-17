@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Company;
 use App\Models\Review;
 use App\Services\YandexMapsParserService;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +43,8 @@ class ParseCompanyJob implements ShouldQueue
                 $company->update([
                     'title' => $result['title'] ?? null,
                     'rating' => $result['rating'] ?? null,
-                    'ratings_count' => $result['ratingsCount'] ?? 0,
-                    'reviews_count' => $result['reviewsCount'] ?? 0,
+                    'ratings_count' => $result['ratings_count'] ?? 0,
+                    'reviews_count' => $result['reviews_count'] ?? 0,
                     'status' => 'completed',
                     'last_error' => null,
                     'last_parsed_at' => now(),
@@ -54,11 +55,13 @@ class ParseCompanyJob implements ShouldQueue
                 foreach ($result['reviews'] ?? [] as $review) {
                     $rows[] = [
                         'company_id' => $company->id,
-                        'external_id' => $review['externalId'],
+                        'external_id' => $review['external_id'],
                         'author' => $review['author'],
                         'rating' => $review['rating'],
                         'text' => $review['text'],
-                        'published_at' => $review['publishedAt'],
+                        'published_at' => ! empty($review['published_at'])
+                            ? Carbon::parse($review['published_at'])
+                            : null,
                     ];
                 }
 

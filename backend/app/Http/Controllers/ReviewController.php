@@ -8,10 +8,8 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ReviewController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Company $company): AnonymousResourceCollection
     {
-        $company = Company::latest()->firstOrFail();
-
         return ReviewResource::collection(
             $company->reviews()->latest()->paginate(50)
         );

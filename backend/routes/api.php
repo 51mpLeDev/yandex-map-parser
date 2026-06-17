@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,4 +18,7 @@ Route::prefix('company')->group(function () {
     Route::get('/', [CompanyController::class, 'showCurrent']);
     Route::get('/{company}', [CompanyController::class, 'show']);
     Route::post('/{company}/refresh', [CompanyController::class, 'refresh']);
+
+    Route::get('/{company}/reviews', [ReviewController::class, 'index']);
+
 })->middleware('auth:sanctum');

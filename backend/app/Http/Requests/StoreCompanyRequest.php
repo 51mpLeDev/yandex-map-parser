@@ -26,7 +26,6 @@ class StoreCompanyRequest extends FormRequest
             'url' => [
                 'required',
                 'url',
-                'regex:/^https?:\/\/(yandex\.(ru|com)|yandex\.[a-z.]+)\/maps\/org\//i',
             ],
         ];
     }

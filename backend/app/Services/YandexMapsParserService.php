@@ -2,35 +2,30 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class YandexMapsParserService
 {
     public function parse(string $url): array
     {
-        $process = new Process([
-            'node',
-            base_path('../parser/dist/index.js'),
-            $url,
-        ]);
+        $response = Http::timeout(600)->post(
+            'http://playwright:3000/parse',
+            [
+                'url' => $url,
+            ]
+        );
 
-        $process->setTimeout(600);
-
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        if (! $response->successful()) {
+            throw new RuntimeException(
+                'Parser request failed: ' . $response->body()
+            );
         }
 
-        $output = trim($process->getOutput());
+        $data = $response->json();
 
-        if ($output === '') {
-            throw new RuntimeException('Parser returned empty output.');
-        }
-
-        $data = json_decode($output, true);
+        Log::info("response data", [$data]);
 
         if (! is_array($data)) {
             throw new RuntimeException('Parser returned invalid JSON.');
@@ -39,8 +34,8 @@ class YandexMapsParserService
         $required = [
             'title',
             'rating',
-            'ratingsCount',
-            'reviewsCount',
+            'ratings_count',
+            'reviews_count',
             'reviews',
         ];
 
