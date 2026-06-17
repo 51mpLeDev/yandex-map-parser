@@ -7,7 +7,7 @@ export async function csrf() {
 export async function login(email: string, password: string) {
     await csrf();
 
-    return api.post("/login", {
+    return api.post("/auth", {
         email,
         password,
     });
