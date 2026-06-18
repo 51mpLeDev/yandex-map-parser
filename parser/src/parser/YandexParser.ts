@@ -46,7 +46,6 @@ export class YandexParser {
                 force: true,
             });
 
-// Дай обработчику page.on("response") закончить response.json()
             await page.waitForTimeout(500);await page.waitForResponse(
                 r => r.url().includes("/maps/api/business/fetchReviews"),
                 { timeout: 30000 }
@@ -84,7 +83,6 @@ export class YandexParser {
 
             await scroller.scrollToBottom();
 
-            // Ждём обработки всех догруженных страниц
             await interceptor.waitUntilIdle();
 
             const reviews: ReviewData[] = interceptor
@@ -110,8 +108,6 @@ export class YandexParser {
                 reviews,
             };
         } finally {
-            // Закрываем context только после того,
-            // как interceptor закончил читать все response.json()
             Logger.write("CLOSING CONTEXT");
 
             await context.close();

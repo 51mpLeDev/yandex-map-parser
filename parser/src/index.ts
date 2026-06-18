@@ -16,7 +16,6 @@ try {
 
     const company = await parser.parse(url);
 
-    Logger.write(JSON.stringify(company, null, 2));
 } finally {
     Logger.write("CLOSING BROWSER");
     await browser.close();

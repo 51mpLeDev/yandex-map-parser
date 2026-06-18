@@ -37,17 +37,10 @@ export class NetworkInterceptor {
         if (!url.includes("/maps/api/business/fetchReviews")) {
             return;
         }
-        Logger.write("START PARSE");
         this.pending++;
-        Logger.write(`pending++ => ${this.pending}`);
         try {
             if (!this.fetchReviewsUrl) {
                 this.fetchReviewsUrl = url;
-
-                Logger.write("=================================");
-                Logger.write("FETCH REVIEWS FOUND");
-                Logger.write(url);
-                Logger.write("=================================");
             }
 
             const json = await response.json();
@@ -59,14 +52,12 @@ export class NetworkInterceptor {
                 this.reviews.push(...items);
             }
 
-            // <-- ВАЖНО: только после успешного чтения JSON
             this.resolveFirstResponse();
 
         } catch (e) {
             Logger.write(`Failed to parse fetchReviews response: ${e}`);
         } finally {
             this.pending--;
-            Logger.write(`pending-- => ${this.pending}`);
         }
     }
 

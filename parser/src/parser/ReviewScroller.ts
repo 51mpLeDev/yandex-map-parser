@@ -7,11 +7,10 @@ export class ReviewScroller {
     ) {}
 
     async scrollToBottom(): Promise<void> {
-        let previousHeight = -1;
         let stableCount = 0;
 
-        while (stableCount < 5) {
-            const height = await this.page.evaluate(() => {
+        while (stableCount < this.totalPage) {
+            await this.page.evaluate(() => {
                 const container = document.querySelector(
                     ".scroll__container",
                 ) as HTMLElement | null;
@@ -28,13 +27,7 @@ export class ReviewScroller {
                 return container.scrollHeight;
             });
 
-            if (height === previousHeight) {
-                stableCount++;
-            } else {
-                stableCount = 0;
-                previousHeight = height;
-            }
-
+            stableCount++;
             await this.page.waitForTimeout(1000);
         }
     }
