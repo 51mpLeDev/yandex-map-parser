@@ -17,6 +17,10 @@ class YandexMapsParserService
             ]
         );
 
+        Log::info("response", [$response->json()]);
+
+
+
         if (! $response->successful()) {
             throw new RuntimeException(
                 'Parser request failed: ' . $response->body()
