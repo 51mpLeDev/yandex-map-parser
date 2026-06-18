@@ -17,10 +17,6 @@ class YandexMapsParserService
             ]
         );
 
-        Log::info("response", [$response->json()]);
-
-
-
         if (! $response->successful()) {
             throw new RuntimeException(
                 'Parser request failed: ' . $response->body()
@@ -28,8 +24,6 @@ class YandexMapsParserService
         }
 
         $data = $response->json();
-
-        Log::info("response data", [$data]);
 
         if (! is_array($data)) {
             throw new RuntimeException('Parser returned invalid JSON.');
