@@ -9,8 +9,8 @@ import { useAuthStore } from "../stores/auth";
 const auth = useAuthStore();
 const router = useRouter();
 
-const email = ref("admin@example.com");
-const password = ref("password");
+const email = ref("");
+const password = ref("");
 const error = ref("");
 
 async function submit() {
