@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'playwright' => [
+        'url' => env('PLAYWRIGHT_URL')
+    ],
+
 ];

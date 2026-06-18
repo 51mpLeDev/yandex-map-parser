@@ -11,7 +11,7 @@ class YandexMapsParserService
     public function parse(string $url): array
     {
         $response = Http::timeout(600)->post(
-            'http://playwright:3000/parse',
+            config('services.playwright.url') . '/parse',
             [
                 'url' => $url,
             ]
