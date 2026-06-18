@@ -24,6 +24,6 @@ class CompanyResource extends JsonResource
             'last_parsed_at' => $this->last_parsed_at,
             'status' => $this->status,
             'last_error' => $this->last_error,
-        ];;
+        ];
     }
 }
