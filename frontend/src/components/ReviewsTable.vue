@@ -4,7 +4,20 @@ import type { Review } from "../types/review";
 
 const props = defineProps<{
   reviews: Review[];
+  total: number;
+  page: number;
+  perPage: number;
 }>();
+
+const from = computed(() => {
+  if (props.total === 0) return 0;
+
+  return (props.page - 1) * props.perPage + 1;
+});
+
+const to = computed(() => {
+  return Math.min(props.page * props.perPage, props.total);
+});
 
 const search = ref("");
 
@@ -47,7 +60,7 @@ function stars(rating: number|null) {
         </h2>
 
         <p class="text-slate-500">
-          {{ filteredReviews.length }} из {{ reviews.length }}
+          Показано {{ from }}–{{ to }} из {{ total }} отзывов
         </p>
       </div>
 

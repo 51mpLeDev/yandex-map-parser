@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 import * as api from "../api/reviews";
 import type { Review } from "../types/review";
+import type { Pagination } from "../types/pagination";
 
 export const useReviewsStore = defineStore("reviews", () => {
     const reviews = ref<Review[]>([]);
@@ -18,11 +19,13 @@ export const useReviewsStore = defineStore("reviews", () => {
         try {
             const { data } = await api.getReviews(companyId, currentPage);
 
-            reviews.value = data.data;
-            total.value = data.total;
-            page.value = data.current_page;
-            lastPage.value = data.last_page;
-            perPage.value = data.per_page;
+            const pagination: Pagination<Review> = data;
+
+            reviews.value = pagination.data;
+            page.value = pagination.meta.current_page;
+            total.value = pagination.meta.total;
+            lastPage.value = pagination.meta.last_page;
+            perPage.value = pagination.meta.per_page;
         } finally {
             loading.value = false;
         }
@@ -32,9 +35,9 @@ export const useReviewsStore = defineStore("reviews", () => {
         reviews,
         page,
         total,
-        load,
         lastPage,
         perPage,
         loading,
+        load,
     };
 });

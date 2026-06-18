@@ -1,13 +1,14 @@
-```vue
 <script setup lang="ts">
-import { ref, watch, onUnmounted } from "vue";
+import {ref, watch, onUnmounted} from "vue";
 
 import CompanyCard from "../components/CompanyCard.vue";
 import ReviewsTable from "../components/ReviewsTable.vue";
 
-import { useCompanyStore } from "../stores/company";
-import { useReviewsStore } from "../stores/reviews";
+import {useCompanyStore} from "../stores/company";
+import {useReviewsStore} from "../stores/reviews";
 
+import Pagination from "../components/Pagination.vue";
+import SearchForm from "../components/SearchForm.vue";
 const url = ref("");
 
 const companyStore = useCompanyStore();
@@ -21,7 +22,15 @@ async function submit() {
   if (!url.value.trim()) return;
 
   reviewsStore.reviews = [];
+  reviewsStore.page = 1;
+
   await companyStore.create(url.value);
+}
+
+async function changePage(page: number) {
+  if (!companyStore.company) return;
+
+  await reviewsStore.load(companyStore.company.id, page);
 }
 
 watch(
@@ -35,19 +44,20 @@ watch(
       }
     }
 );
+
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-100">
+  <div class="min-h-screen bg-slate-50">
     <!-- Header -->
-    <header class="border-b border-slate-200 bg-white shadow-sm">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur shadow-sm">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
         <div>
-          <h1 class="text-3xl font-bold text-slate-900">
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900">
             🗺️ Yandex Maps Parser
           </h1>
-          <p class="mt-1 text-sm text-slate-500">
-            Парсинг информации и отзывов организаций
+          <p class="mt-2 text-base text-slate-500">
+            Получение информации об организациях и парсинг отзывов из Яндекс Карт
           </p>
         </div>
 
@@ -62,47 +72,37 @@ watch(
     </header>
 
     <!-- Content -->
-    <main class="mx-auto max-w-7xl p-6 space-y-6">
+    <main class="mx-auto max-w-7xl space-y-8 px-6 py-8">
       <!-- Search -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-4 text-xl font-semibold text-slate-900">
-          Получить информацию об организации
-        </h2>
-
-        <div class="flex flex-col gap-3 md:flex-row">
-          <input
-              v-model="url"
-              type="text"
-              placeholder="https://yandex.ru/maps/org/..."
-              class="flex-1 rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-          />
-
-          <button
-              @click="submit"
-              :disabled="companyStore.loading"
-              class="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {{
-              companyStore.loading
-                  ? "⏳ Обработка..."
-                  : "🚀 Начать парсинг"
-            }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Company -->
-      <CompanyCard
-          v-if="companyStore.company"
-          :company="companyStore.company"
+      <SearchForm
+          v-model="url"
+          :loading="companyStore.loading"
+          @submit="submit"
       />
+      <section class="space-y-6">
+        <!-- Company -->
+        <CompanyCard
+            v-if="companyStore.company"
+            :company="companyStore.company"
+        />
 
-      <!-- Reviews -->
-      <ReviewsTable
-          v-if="reviewsStore.reviews.length"
-          :reviews="reviewsStore.reviews"
-      />
+        <!-- Reviews -->
+        <ReviewsTable
+            v-if="reviewsStore.reviews.length"
+            :reviews="reviewsStore.reviews"
+            :total="reviewsStore.total"
+            :page="reviewsStore.page"
+            :per-page="reviewsStore.perPage"
+        />
+
+        <Pagination
+            v-if="reviewsStore.lastPage > 1 && reviewsStore.reviews.length"
+            :page="reviewsStore.page"
+            :last-page="reviewsStore.lastPage"
+            :loading="reviewsStore.loading"
+            @change="changePage"
+        />
+      </section>
     </main>
   </div>
 </template>
-```

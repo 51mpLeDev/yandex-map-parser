@@ -33,26 +33,6 @@ export class YandexParser {
             const title =
                 (await page.locator("h1").first().textContent())?.trim() ?? "";
 
-            const rating = Number(
-                (
-                    (await page.locator("[itemprop='ratingValue']").textContent()) ??
-                    ""
-                ).replace(",", "."),
-            );
-
-            const ratingsCount = Number(
-                (
-                    (await page.locator("[itemprop='ratingCount']").textContent()) ??
-                    ""
-                ).replace(/\D/g, ""),
-            );
-
-            const reviewsCount = Number(
-                (
-                    (await page.locator("[itemprop='reviewCount']").textContent()) ??
-                    ""
-                ).replace(/\D/g, ""),
-            );
 
             const reviewsTab = page.locator(
                 'div[role="tab"][aria-label^="Отзывы"]',
@@ -81,6 +61,22 @@ export class YandexParser {
             if (!fetchReviewsUrl) {
                 throw new Error("fetchReviews URL was not intercepted.");
             }
+
+            const getNumericValue = async (selector: string): Promise<number> => {
+                const locator = page.locator(selector).first();
+
+                const content = await locator.getAttribute("content");
+                if (content) {
+                    return Number(content.replace(",", "."));
+                }
+
+                const text = (await locator.textContent()) ?? "";
+                return Number(text.replace(",", ".").replace(/[^\d.]/g, ""));
+            };
+
+            const rating = await getNumericValue('[itemprop="ratingValue"]');
+            const ratingsCount = await getNumericValue('[itemprop="ratingCount"]');
+            const reviewsCount = await getNumericValue('[itemprop="reviewCount"]');
 
             const totalPages = interceptor.getTotalPages();
 
