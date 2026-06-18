@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.post("/parse", async (req, res) => {
     try {
+        Logger.write("server parse start");
         const { url } = req.body;
 
         if (!url) {
@@ -20,7 +21,7 @@ app.post("/parse", async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error(error);
+        Logger.write(`error: ${JSON.stringify(error)}`);
         res.status(500).json({
             error: error instanceof Error ? error.message : "Unknown error",
         });
