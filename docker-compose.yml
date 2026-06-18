@@ -53,5 +53,17 @@ services:
       - "13000:3000"
     command: sh -c "npm install && npm run build && node dist/server.js"
 
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - mysql
+    command: php artisan queue:work --sleep=3 --tries=3 --timeout=600
+
 volumes:
   mysql_data:
